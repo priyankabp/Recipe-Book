@@ -59,10 +59,37 @@ app.post('/add',function(req,res){
     		res.redirect('/');
     		release()
   		})
-  		// client.query("INSERT INTO recipes(name, ingredients, directions) VALUES($1, $2, $3)",
-  		// 	[req.body.name, req.body.ingredients, req.body.directions]);
-  		// release()
-  		// res.redirect('/');
+	});
+});
+
+app.delete('/delete/:id',function(req,res){
+	//PG connect
+	pool.connect((err, client, release) => {
+  		if (err) {
+    		return console.error('Error acquiring client', err.stack)
+  		}
+  		client.query('DELETE FROM recipes WHERE id = $1', [req.params.id], (err, result) => {
+    		if (err) {
+      			return console.error('Error executing query', err.stack)
+    		}
+    		res.sendStatus(200);
+    		release()
+  		})
+	});
+});
+
+app.post('/edit',function(req,res){
+	//PG connect
+	pool.connect((err, client, release) => {
+  		if (err) {
+    		return console.error('Error acquiring client', err.stack)
+  		}
+  		client.query('UPDATE recipes SET name=$1, ingredients=$2, directions=$3 WHERE id=$4', [req.body.name, req.body.ingredients, req.body.directions, req.body.id], (err, result) => {
+    		if (err) {
+      			return console.error('Error executing query', err.stack)
+    		}
+    		res.redirect('/');
+  		})
 	});
 });
 
