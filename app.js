@@ -41,27 +41,29 @@ app.get('/',function(req,res){
       			return console.error('Error executing query', err.stack)
     		}
     		res.render('index',{recipes: result.rows});
-    		console.log(result.rows)
     		release()
   		})
 	})
-	/*pool.connect(connect, function(err, client, done){
-		
-		if (err) {
-			return console.error('Error fetching client from pool', err);
-		}
-		console.log("before callback#########")
-		//client.query('SELECT * FROM recipes', function(err, result){
-			//console.log("in callback#########")
-			//if (err) {
-				//return console.error('Error running query', err);
-		// 	}
-		// 	console.log("result"+result)
-		// 	//res.render(false,'index',{recipes: result.rows});
-		// 	done();
-		// });
-		
-	});*/
+});
+
+app.post('/add',function(req,res){
+	//PG connect
+	pool.connect((err, client, release) => {
+  		if (err) {
+    		return console.error('Error acquiring client', err.stack)
+  		}
+  		client.query('INSERT INTO recipes(name, ingredients, directions) VALUES($1, $2, $3)', [req.body.name, req.body.ingredients, req.body.directions], (err, result) => {
+    		if (err) {
+      			return console.error('Error executing query', err.stack)
+    		}
+    		res.redirect('/');
+    		release()
+  		})
+  		// client.query("INSERT INTO recipes(name, ingredients, directions) VALUES($1, $2, $3)",
+  		// 	[req.body.name, req.body.ingredients, req.body.directions]);
+  		// release()
+  		// res.redirect('/');
+	});
 });
 
 // Server
